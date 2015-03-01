@@ -113,7 +113,11 @@ public class TestDb extends AndroidTestCase {
         also make use of the ValidateCurrentRecord function from within TestUtilities.  Return
         the rowId of the inserted location.
     */
-    public long testLocationTable() {
+    public void testLocationTable() {
+        insertLocation();
+    }
+
+    public long insertLocation() {
         // First step: Get reference to writable database
         SQLiteDatabase db = new WeatherDbHelper(this.mContext).getWritableDatabase();
 
@@ -156,7 +160,8 @@ public class TestDb extends AndroidTestCase {
     public void testWeatherTable() {
         // First insert the location, and then use the locationRowId to insert
         // the weather. Make sure to cover as many failure cases as you can.
-        long locationRowId = testLocationTable();
+//        long locationRowId = testLocationTable();
+        long locationRowId = insertLocation();
         assertTrue("Error: testWeatherTable() locationRowId", locationRowId != -1);
 
         // We return the rowId of the inserted location in testLocationTable, so
@@ -169,8 +174,7 @@ public class TestDb extends AndroidTestCase {
         // (you can use the createWeatherValues TestUtilities function if you wish)
         ContentValues contentValues = TestUtilities.createWeatherValues(locationRowId);
         // Insert ContentValues into database and get a row ID back
-        long weatherRowId;
-        weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, contentValues);
+        long weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, contentValues);
         assertTrue("Error: testWeatherTable() weatherRowId", weatherRowId != -1);
 
         // Query the database and receive a Cursor back
