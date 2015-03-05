@@ -13,6 +13,7 @@
     <string name="pref_temperature_units_label">Temperature units</string>
     <string name="pref_temperature_units_key" translatable="false">temperature_units</string>
     <string name="pref_temperature_units_default" translatable="false">metric</string>
+    <string name="pref_temperature_units_imperial" translatable="false">imperial</string>
     <string name="action_map">View location</string>
     <string name="share">Share</string>
 
