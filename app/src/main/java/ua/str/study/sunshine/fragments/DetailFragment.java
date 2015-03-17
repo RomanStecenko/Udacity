@@ -41,7 +41,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         inflater.inflate(R.menu.menu_detail, menu);
         MenuItem shareItem = menu.findItem(R.id.action_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-        if (mShareActionProvider != null) {
+        if (forecastString != null) {
             mShareActionProvider.setShareIntent(getShareIntent());
         }
     }
