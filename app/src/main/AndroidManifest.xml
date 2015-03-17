@@ -37,8 +37,9 @@
         <provider
             android:authorities="ua.str.study.sunshine"
             android:name=".data.WeatherProvider"
-            android:enabled="true"
-            android:exported="true"/>
+            android:exported="true"
+            android:enabled="true"/>
+
     </application>
 
 </manifest>
