@@ -1,4 +1,4 @@
-package ua.str.study.sunshine.activitys;
+package ua.str.study.sunshine.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -14,7 +14,7 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment()).commit();
+                    .add(R.id.weather_detail_container, new DetailFragment()).commit();
         }
     }
 }

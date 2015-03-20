@@ -23,7 +23,7 @@ import android.widget.ListView;
 import ua.str.study.sunshine.FetchWeatherTask;
 import ua.str.study.sunshine.Utility;
 import ua.str.study.sunshine.R;
-import ua.str.study.sunshine.activitys.DetailActivity;
+import ua.str.study.sunshine.activities.DetailActivity;
 import ua.str.study.sunshine.data.ForecastAdapter;
 import ua.str.study.sunshine.data.WeatherContract;
 

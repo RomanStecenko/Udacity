@@ -1,4 +1,4 @@
-package ua.str.study.sunshine.activitys;
+package ua.str.study.sunshine.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -10,24 +10,39 @@ import android.widget.Toast;
 
 import ua.str.study.sunshine.R;
 import ua.str.study.sunshine.Utility;
+import ua.str.study.sunshine.fragments.DetailFragment;
 import ua.str.study.sunshine.fragments.ForecastFragment;
 
 
 public class MainActivity extends ActionBarActivity {
 
     private String mLocation;
-    private final String FORECAST_FRAGMENT_TAG = "FFTAG";
+    private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mLocation = Utility.getPreferredLocation(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment(), FORECAST_FRAGMENT_TAG)
-                    .commit();
+
+        if (findViewById(R.id.weather_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.weather_detail_container, new DetailFragment(), DETAIL_FRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
         }
+
         getSupportActionBar().setLogo(R.drawable.ic_launcher);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -73,7 +88,7 @@ public class MainActivity extends ActionBarActivity {
         String location = Utility.getPreferredLocation(this);
         // update the location in our second pane using the fragment manager
         if (location != null && !location.equals(mLocation)) {
-            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentByTag(FORECAST_FRAGMENT_TAG);
+            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
             if (null != ff) {
                 ff.onLocationChanged();
             }

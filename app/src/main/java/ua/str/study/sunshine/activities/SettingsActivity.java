@@ -1,4 +1,4 @@
-package ua.str.study.sunshine.activitys;
+package ua.str.study.sunshine.activities;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

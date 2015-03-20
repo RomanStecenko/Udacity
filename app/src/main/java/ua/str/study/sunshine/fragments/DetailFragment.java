@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 import ua.str.study.sunshine.R;
 import ua.str.study.sunshine.Utility;
-import ua.str.study.sunshine.activitys.SettingsActivity;
+import ua.str.study.sunshine.activities.SettingsActivity;
 import ua.str.study.sunshine.data.WeatherContract.WeatherEntry;
 import ua.str.study.sunshine.data.WeatherContract.LocationEntry;
 
@@ -130,7 +130,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Intent intent = getActivity().getIntent();
-        if (intent == null) {
+        if (intent == null || intent.getData() == null) {
             return null;
         }
         return new CursorLoader(
