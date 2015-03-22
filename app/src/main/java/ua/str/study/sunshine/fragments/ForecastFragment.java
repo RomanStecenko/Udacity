@@ -1,6 +1,6 @@
 package ua.str.study.sunshine.fragments;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,15 +23,29 @@ import android.widget.ListView;
 import ua.str.study.sunshine.FetchWeatherTask;
 import ua.str.study.sunshine.Utility;
 import ua.str.study.sunshine.R;
-import ua.str.study.sunshine.activities.DetailActivity;
 import ua.str.study.sunshine.data.ForecastAdapter;
 import ua.str.study.sunshine.data.WeatherContract;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int FORECAST_LOADER_ID = 119;
+    private static final String KEY_POSITION = "position";
 
     private ForecastAdapter forecastAdapter;
+    private int mSelectedPosition = ListView.INVALID_POSITION;
+    private Callback listener;
+    private ListView listView;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (Callback) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement Callback");
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,15 +82,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        String locationSetting = Utility.getPreferredLocation(getActivity());
-        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
-        Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri, null, null, null, sortOrder);
-        forecastAdapter = new ForecastAdapter(getActivity(), cur, 0);
-//        forecastAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, new ArrayList<String>());
-        ListView listView = (ListView) rootView.findViewById(R.id.listView_forecast);
+        forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
+        listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(forecastAdapter);
         listView.setOnItemClickListener(onItemClickListener);
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_POSITION)) {
+            mSelectedPosition = savedInstanceState.getInt(KEY_POSITION);
+        }
         return rootView;
     }
 
@@ -86,13 +98,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             // CursorAdapter returns a cursor at the correct position for getItem(), or null
             // if it cannot seek to that position.
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            mSelectedPosition = position;
             if (cursor != null) {
                 String locationSetting = Utility.getPreferredLocation(getActivity());
-                Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                locationSetting, cursor.getLong(Utility.COL_WEATHER_DATE)
-                        ));
-                startActivity(intent);
+                Uri data = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                        locationSetting, cursor.getLong(Utility.COL_WEATHER_DATE));
+                listener.onItemSelected(data);
             }
         }
     };
@@ -108,29 +119,47 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String locationSetting = Utility.getPreferredLocation(getActivity());
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        switch (id){
-            case FORECAST_LOADER_ID:
-                Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
-                return new CursorLoader(
-                        getActivity(),
-                        weatherForLocationUri,
-                        Utility.FORECAST_COLUMNS,
-                        null,
-                        null,
-                        sortOrder
-                );
-            default:
-                return null;
-        }
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis());
+        return new CursorLoader(
+                getActivity(),
+                weatherForLocationUri,
+                Utility.FORECAST_COLUMNS,
+                null,
+                null,
+                sortOrder
+        );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         forecastAdapter.swapCursor(data);
+        if (mSelectedPosition != ListView.INVALID_POSITION) {
+            listView.smoothScrollToPosition(mSelectedPosition);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         forecastAdapter.swapCursor(null);
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mSelectedPosition != ListView.INVALID_POSITION) {
+            outState.putInt(KEY_POSITION, mSelectedPosition);
+        }
     }
 }

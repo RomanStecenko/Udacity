@@ -4,12 +4,6 @@
     tools:context="ua.str.study.sunshine.activities.DetailActivity">
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_share"
         android:title="@string/share"
         app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
